@@ -7,15 +7,19 @@ Basic
 - User login (Redis✅), registeration
 - Administrator login and Permissions (Casbin)
 - Logs
+
 Without Login
+- Register
 - List routes
 - Check availble count of seats by Route
+
 Administrators
 - Add, update, delete, search Routes
 - Add, update, delete Customers
 - Add, update, delete Users
 - Add, update, delete, search Seats
 - Add, update, delete, search Seatclasses
+
 User
 - Check availble seats by Route and Seatclass
 - Order seat
