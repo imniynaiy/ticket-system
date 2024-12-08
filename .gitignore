@@ -1,0 +1,7 @@
+_output/
+logs/
+log/logs/
+web/*
+!web/.gitkeep
+configs/config.yaml
+__debug*

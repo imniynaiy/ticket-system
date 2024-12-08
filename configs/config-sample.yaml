@@ -1,0 +1,28 @@
+server:
+  port: 8081
+  release-mode: false
+  cors: true
+  static-path: ../flome-react/build
+  auth-salt: flomeiscool
+  jwt-signing-key: MySigningKey
+
+database:
+  address: 127.0.0.1
+  port: 3306
+  username: root
+  password: my-secret-pw
+  dbname: d_flome
+
+# 日志配置
+log:
+  disable-caller: false # 是否开启 caller，如果开启会在日志中显示调用日志所在的文件和行号
+  disable-stacktrace: false # 是否禁止在 panic 及以上级别打印堆栈信息
+  level: debug # 指定日志级别，可选值：debug, info, warn, error, dpanic, panic, fatal
+  format: console # 指定日志显示格式，可选值：console, json
+  output-path: logs # 日志目录
+  split-error-log: false 
+  rotate:
+    max-age: 1 
+    max-size: 1
+    max-backups: 3
+    compress: true
