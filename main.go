@@ -22,7 +22,8 @@ func main() {
 		log.String("git_tree_state", verflag.GitTreeState),
 	)
 
-	database.Init(&config.GlobalConfig.Database)
+	database.InitDB(&config.GlobalConfig.Database)
+	database.InitRedis(&config.GlobalConfig.Redis)
 
 	server.Start()
 }

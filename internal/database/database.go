@@ -12,7 +12,7 @@ import (
 
 var GlobalDB *gorm.DB
 
-func Init(dc *config.DatabaseConfig) {
+func InitDB(dc *config.DatabaseConfig) {
 	// "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dc.Username, dc.Password, dc.Address, dc.Port, dc.DBName)

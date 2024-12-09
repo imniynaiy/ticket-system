@@ -13,6 +13,12 @@ database:
   password: my-secret-pw
   dbname: d_flome
 
+redis:
+  address: 127.0.0.1
+  port: 6379
+  password: 12345678
+  dbname: db0
+
 # 日志配置
 log:
   disable-caller: false # 是否开启 caller，如果开启会在日志中显示调用日志所在的文件和行号

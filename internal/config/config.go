@@ -13,6 +13,7 @@ var ConfigFile = pflag.StringP("config", "c", "./configs/config.yaml", "Set conf
 type config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
+	Redis    RedisConfig
 	Log      mylog.LogConfig
 }
 
@@ -31,6 +32,13 @@ type DatabaseConfig struct {
 	Username string
 	Password string
 	DBName   string `mapstructure:"dbname"`
+}
+
+type RedisConfig struct {
+	Address  string
+	Port     string
+	Password string
+	DB       int `mapstructure:"db"`
 }
 
 var GlobalConfig config
