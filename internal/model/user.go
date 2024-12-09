@@ -1,17 +1,38 @@
 package model
 
-import "gorm.io/gorm"
-
 type User struct {
-	gorm.Model
-	Username string
-	Password string
+	UserId       uint
+	AgentFlag    string
+	FamilyName   string
+	FirstName    string
+	Sex          int
+	Tel          int
+	Address      string
+	Email        string
+	PasswordHash string
+	Role         int
 }
 
 func (User) TableName() string {
-	return "t_users"
+	return "user"
+}
+
+type LoginReq struct {
+	Email    string
+	Password string
 }
 
 type LoginResp struct {
 	Token string
+}
+
+type RegisterReq struct {
+	AgentFlag  string
+	FamilyName string
+	FirstName  string
+	Sex        int
+	Tel        int
+	Address    string
+	Email      string
+	Password   string
 }

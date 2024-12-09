@@ -4,6 +4,7 @@ import (
 	"github.com/imniynaiy/ticket-system/internal/database"
 	"github.com/imniynaiy/ticket-system/internal/model"
 	"github.com/imniynaiy/ticket-system/internal/util"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
@@ -11,15 +12,33 @@ func getUserRepo() *gorm.DB {
 	return database.GlobalDB.Model(&model.User{})
 }
 
-func Login(user *model.User) (token string, err error) {
+func Login(user *model.LoginReq) (token string, err error) {
 	var userInDb model.User
-	err = getUserRepo().Where("username = ?", user.Username).First(&userInDb).Error
+	err = getUserRepo().Where("email = ?", user.Email).First(&userInDb).Error
 	if err != nil {
 		return "", err
 	}
-	err = util.CompareHashAndPassword([]byte(userInDb.Password), user.Password)
+	err = util.CompareHashAndPassword([]byte(userInDb.PasswordHash), user.Password)
 	if err != nil {
 		return "", err
 	}
-	return util.CreateJWT(userInDb.Username)
+	var us model.UserSession
+	us.UserID = userInDb.UserId
+	us.Role = userInDb.Role
+	return util.StoreInRedis(&us)
+}
+
+func Register(userReq *model.RegisterReq) error {
+	var newUser model.User
+	copier.Copy(&newUser, userReq)
+	hash, err := util.GeneratePasswordHash(userReq.Password)
+	if err != nil {
+		return err
+	}
+	newUser.PasswordHash = hash
+	err = getUserRepo().Create(&newUser).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

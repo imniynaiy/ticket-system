@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -20,11 +21,14 @@ func Authenticationer() gin.HandlerFunc {
 			return
 		}
 
-		err := util.VerifyJWT(token)
+		session, err := util.VerifyTokenWithRedis(token)
 		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
+
+		c.AddParam("UserId", strconv.FormatUint(uint64(session.UserID), 10))
+		c.AddParam("Role", strconv.Itoa(session.Role))
 
 		c.Next()
 
