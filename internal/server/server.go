@@ -83,6 +83,8 @@ func setupGin() *gin.Engine {
 	admin.Use(middleware.RequireAdmin())
 	ctl.AddUserRoutes(v1)
 	ctl.AddRouteRoutes(admin)
+	ctl.AddSeatRoutes(admin)
+	ctl.AddSeatclassRoutes(admin)
 
 	return router
 }
