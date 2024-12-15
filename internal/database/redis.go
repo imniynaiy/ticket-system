@@ -17,3 +17,7 @@ func InitRedis(rc *config.RedisConfig) {
 	})
 	GlobalRedis = rdb
 }
+
+func CloseRedis() {
+	GlobalRedis.Close()
+}

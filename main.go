@@ -11,19 +11,25 @@ import (
 
 func main() {
 	flag.ParseAndHandleHelpFlag()
-	verflag.PrintAndExitIfRequested()
+	verflag.HandleVersionFlagAndExit()
 	config.ParseConfig()
 	log.Init(&config.GlobalConfig.Log)
 	defer log.Sync()
 
-	log.Info("config:", log.String("file", *config.ConfigFile))
+	logVersionInfo()
+
+	database.InitDB(&config.GlobalConfig.Database)
+	defer database.CloseDB()
+
+	database.InitRedis(&config.GlobalConfig.Redis)
+	defer database.CloseRedis()
+
+	server.Start()
+}
+
+func logVersionInfo() {
 	log.Info("version:", log.String("build_date", verflag.BuildDate),
 		log.String("git_version", verflag.GitVersion), log.String("git_commit", verflag.GitCommit),
 		log.String("git_tree_state", verflag.GitTreeState),
 	)
-
-	database.InitDB(&config.GlobalConfig.Database)
-	database.InitRedis(&config.GlobalConfig.Redis)
-
-	server.Start()
 }

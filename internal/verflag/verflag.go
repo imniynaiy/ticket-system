@@ -20,7 +20,7 @@ var (
 
 var versionFlag = pflag.BoolP("version", "v", false, "Show version info")
 
-func PrintAndExitIfRequested() {
+func HandleVersionFlagAndExit() {
 	if *versionFlag {
 		log.Printf("Version: %#v\n", GitVersion)
 		os.Exit(0)
