@@ -2,14 +2,13 @@ package middleware
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/imniynaiy/ticket-system/internal/util"
 )
 
-var authHeader = "Authorization"
+const authHeader = "Authorization"
 
 func Authenticationer() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -27,8 +26,8 @@ func Authenticationer() gin.HandlerFunc {
 			return
 		}
 
-		c.AddParam("UserId", strconv.FormatUint(uint64(session.UserID), 10))
-		c.AddParam("Role", strconv.Itoa(session.Role))
+		c.Set("UserId", uint64(session.UserID))
+		c.Set("IsAdmin", session.IsAdmin)
 
 		c.Next()
 

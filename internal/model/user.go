@@ -10,7 +10,7 @@ type User struct {
 	Address      string
 	Email        string
 	PasswordHash string
-	Role         int
+	IsAdmin      bool
 }
 
 func (User) TableName() string {

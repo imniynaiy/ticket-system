@@ -33,7 +33,7 @@ func getKey(token string) string {
 	return "session:" + token
 }
 
-func StoreInRedis(us *model.UserSession) (string, error) {
+func GenTokenAndStoreInRedis(us *model.UserSession) (string, error) {
 
 	token := uuid.New().String()
 	key := getKey(token)
@@ -45,7 +45,7 @@ func StoreInRedis(us *model.UserSession) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return key, nil
+	return token, nil
 }
 
 func VerifyTokenWithRedis(token string) (*model.UserSession, error) {

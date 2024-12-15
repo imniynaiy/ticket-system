@@ -24,8 +24,8 @@ func Login(user *model.LoginReq) (token string, err error) {
 	}
 	var us model.UserSession
 	us.UserID = userInDb.UserId
-	us.Role = userInDb.Role
-	return util.StoreInRedis(&us)
+	us.IsAdmin = userInDb.IsAdmin
+	return util.GenTokenAndStoreInRedis(&us)
 }
 
 func Register(userReq *model.RegisterReq) error {
