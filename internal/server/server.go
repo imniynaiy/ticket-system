@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imniynaiy/ticket-system/internal/config"
 	ctl "github.com/imniynaiy/ticket-system/internal/controller/v1"
+	adminctl "github.com/imniynaiy/ticket-system/internal/controller/v1/admin"
 	"github.com/imniynaiy/ticket-system/internal/log"
 	"github.com/imniynaiy/ticket-system/internal/middleware"
 )
@@ -82,9 +83,9 @@ func setupGin() *gin.Engine {
 	admin.Use(middleware.Authenticationer())
 	admin.Use(middleware.RequireAdmin())
 	ctl.AddUserRoutes(v1)
-	ctl.AddRouteRoutes(admin)
-	ctl.AddSeatRoutes(admin)
-	ctl.AddSeatclassRoutes(admin)
+	adminctl.AddRouteRoutes(admin)
+	adminctl.AddSeatRoutes(admin)
+	adminctl.AddSeatclassRoutes(admin)
 
 	return router
 }
