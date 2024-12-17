@@ -237,7 +237,7 @@ func CreateReservation(userId uint, req *model.CreateReservationReq) (*model.Res
 
 	// Get route_id from seat table
 	var seat model.Seat
-	if err := tx.Where("seat_id = ?", req.SeatID).First(&seat).Error; err != nil {
+	if err := tx.Where("seat_id = ? and status = 1", req.SeatID).First(&seat).Error; err != nil {
 		tx.Rollback()
 		getLogRepo().Model(log).Updates(map[string]interface{}{
 			"result": 2,
@@ -255,7 +255,7 @@ func CreateReservation(userId uint, req *model.CreateReservationReq) (*model.Res
 	}
 
 	// Update seat status
-	if err := tx.Model(&model.Seat{}).Where("seat_id = ?", req.SeatID).
+	if err := tx.Model(&model.Seat{}).Where("seat_id = ? and status = 1", req.SeatID).
 		Update("status", 0).Error; err != nil {
 		tx.Rollback()
 		getLogRepo().Model(log).Updates(map[string]interface{}{
