@@ -31,6 +31,17 @@ type ListSeatsResp struct {
 	Seats []Seat `json:"seats"`
 }
 
+type UserListSeatsReq struct {
+	RouteID  uint `form:"route_id" binding:"required"`
+	Page     int  `form:"page,default=1" binding:"min=1"`
+	PageSize int  `form:"page_size,default=10" binding:"min=1,max=100"`
+}
+
+type UserListSeatsResp struct {
+	Total int64  `json:"total"`
+	Seats []Seat `json:"seats"`
+}
+
 func (Seat) TableName() string {
 	return "seat"
 }

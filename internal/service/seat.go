@@ -91,3 +91,26 @@ func ListSeats(req *model.ListSeatsReq) (*model.ListSeatsResp, error) {
 		Seats: seats,
 	}, nil
 }
+
+func UserListSeats(req *model.UserListSeatsReq) (*model.UserListSeatsResp, error) {
+	db := getSeatRepo()
+	if req.RouteID != 0 {
+		db = db.Where("route_id = ?", req.RouteID)
+	}
+
+	var total int64
+	if err := db.Count(&total).Error; err != nil {
+		return nil, err
+	}
+
+	var seats []model.Seat
+	offset := (req.Page - 1) * req.PageSize
+	if err := db.Offset(offset).Limit(req.PageSize).Find(&seats).Error; err != nil {
+		return nil, err
+	}
+
+	return &model.UserListSeatsResp{
+		Total: total,
+		Seats: seats,
+	}, nil
+}
