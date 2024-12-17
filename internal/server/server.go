@@ -79,14 +79,21 @@ func setupGin() *gin.Engine {
 
 	api := router.Group("/api")
 	v1 := api.Group("/v1")
+	ctl.AddUserRoutes(v1)
+	ctl.AddRouteRoutes(v1)
+
+	user := v1.Group("/user")
+	user.Use(middleware.Authenticationer())
+	ctl.AddReservationRoutes(user)
+	ctl.AddSeatRoutes(user)
+
 	admin := v1.Group("/admin")
 	admin.Use(middleware.Authenticationer())
 	admin.Use(middleware.RequireAdmin())
-	ctl.AddUserRoutes(v1)
 	adminctl.AddRouteRoutes(admin)
 	adminctl.AddSeatRoutes(admin)
 	adminctl.AddSeatclassRoutes(admin)
-
+	adminctl.AddReservationRoutes(admin)
 	return router
 }
 

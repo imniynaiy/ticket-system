@@ -26,7 +26,7 @@ func Authenticationer() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("UserId", uint64(session.UserID))
+		c.Set("UserId", uint(session.UserID))
 		c.Set("IsAdmin", session.IsAdmin)
 
 		c.Next()
