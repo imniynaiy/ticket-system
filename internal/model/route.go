@@ -44,6 +44,31 @@ type ListRoutesResp struct {
 	Routes []Route `json:"routes"`
 }
 
+type UserListRoutesReq struct {
+	Page          int       `form:"page,default=1" binding:"min=1"`
+	PageSize      int       `form:"page_size,default=10" binding:"min=1,max=100"`
+	DepartureFrom string    `form:"departure_from" binding:"required"`
+	ArrivalTo     string    `form:"arrival_to" binding:"required"`
+	DepartureTime time.Time `form:"departure_time" binding:"required"`
+}
+
+type RoutesWithSeatclass struct {
+	Route
+	SeatClass []ListRoutesSeatClass `json:"seat_class"`
+}
+
+type ListRoutesSeatClass struct {
+	SeatClassID uint    `json:"seatclass_id" gorm:"column:seatclass_id"`
+	SeatClass   string  `json:"seatclass_name" gorm:"column:seatclass_name"`
+	Price       float32 `json:"price" gorm:"column:price"`
+	Available   int     `json:"available" gorm:"column:available"`
+}
+
+type UserListRoutesResp struct {
+	Total  int64                 `json:"total"`
+	Routes []RoutesWithSeatclass `json:"routes"`
+}
+
 func (Route) TableName() string {
 	return "route"
 }

@@ -104,3 +104,52 @@ func ListRoutes(page, pageSize int) (*model.ListRoutesResp, error) {
 		Routes: routes,
 	}, nil
 }
+
+func UserListRoutes(req *model.UserListRoutesReq) (*model.UserListRoutesResp, error) {
+	var total int64
+	query := getRouteRepo().Model(&model.Route{}).
+		Where("departure_from = ? AND arrival_to = ? AND DATE(departure_time) = DATE(?)",
+			req.DepartureFrom, req.ArrivalTo, req.DepartureTime)
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, err
+	}
+
+	var routes []model.Route
+	offset := (req.Page - 1) * req.PageSize
+	if err := query.Offset(offset).Limit(req.PageSize).Find(&routes).Error; err != nil {
+		return nil, err
+	}
+	// Get seat class information for each route
+	routesWithSeats := make([]model.RoutesWithSeatclass, len(routes))
+	for i, route := range routes {
+		// Copy base route info
+		routesWithSeats[i].Route = route
+
+		// Get seat classes and counts for this route
+		var seatClasses []model.ListRoutesSeatClass
+		err := database.GlobalDB.Raw(`
+		SELECT 
+			sc.seatclass_id,
+			sc.seatclass_name,
+			sc.factor * r.basic_fee as price,
+			COUNT(*) as available
+		FROM seatclass sc
+		JOIN seat s ON s.seatclass_id = sc.seatclass_id 
+		JOIN route r ON s.route_id = r.route_id
+		WHERE r.route_id = ? and s.status = 1
+		GROUP BY sc.seatclass_id, sc.seatclass_name, sc.factor, r.basic_fee;
+		`, route.RouteID).Scan(&seatClasses).Error
+
+		if err != nil {
+			return nil, err
+		}
+
+		routesWithSeats[i].SeatClass = seatClasses
+	}
+
+	return &model.UserListRoutesResp{
+		Total:  total,
+		Routes: routesWithSeats,
+	}, nil
+}
