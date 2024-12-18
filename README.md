@@ -5,22 +5,23 @@ Ticket System based on H26 AP Test.
 ## Functions
 Basic
 - ✅ User login (Redis), registeration✅
-- Logs
+- ✅ Logs
 - Error
 
 Without Login
 - ✅ Register
-- List routes
-- Check availble count of seats by Route
+- ✅ List routes
+- ✅ Check availble count of seats by Route
 
-Administrators✅
-- Add, update, delete, search Routes
-- Add, update, delete, search Seats
-- Add, update, delete, search Seatclasses
+Administrators
+- ✅ Add, update, delete, search Routes
+- ✅ Add, update, delete, search Seats
+- ✅ Add, update, delete, search Seatclasses
 
 User
-- Check availble seats by Route and Seatclass
-- Order seat
+- ✅ Check availble seats by Route
+- ✅ Order seat
+- ✅ List orders, get specific order
 
 
 
