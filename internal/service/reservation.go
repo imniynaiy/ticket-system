@@ -7,6 +7,7 @@ import (
 	"github.com/imniynaiy/ticket-system/internal/database"
 	"github.com/imniynaiy/ticket-system/internal/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func getReservationRepo() *gorm.DB {
@@ -237,7 +238,7 @@ func CreateReservation(userId uint, req *model.CreateReservationReq) (*model.Res
 
 	// Get route_id from seat table
 	var seat model.Seat
-	if err := tx.Where("seat_id = ? and status = 1", req.SeatID).First(&seat).Error; err != nil {
+	if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).Where("seat_id = ? and status = 1", req.SeatID).First(&seat).Error; err != nil {
 		tx.Rollback()
 		getLogRepo().Model(log).Updates(map[string]interface{}{
 			"result": 2,
