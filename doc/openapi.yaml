@@ -1,0 +1,842 @@
+openapi: 3.0.3
+info:
+  title: Ticket System - OpenAPI 3.0
+  description: >-
+    This is a sample Ticket System Server from H26 AP test based on the OpenAPI
+    3.0 specification.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8081/api/v1
+tags:
+  - name: route
+    description: 船便API
+  - name: seat
+    description: 座席API
+  - name: seatclass
+    description: 座席クラスAPI
+  - name: user
+    description: ユーザAPI
+  - name: reservation
+    description: 予約API
+paths:
+  /admin/routes:
+    get:
+      tags:
+        - route
+      summary: 路線一覧を取得
+      description: 路線一覧を取得
+      operationId: listRoutes
+      parameters:
+        - name: page
+          in: query
+          description: "Page number (default: 1)"
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: "Items per page (default: 10)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+    put:
+      tags:
+        - route
+      summary: 路線を更新
+      description: 路線を更新
+      operationId: updateRoute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Route'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Route not found
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+    post:
+      tags:
+        - route
+      summary: 路線を追加
+      description: 路線を追加
+      operationId: addRoute
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Route'
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+  /admin/routes/{routeId}:
+    get:
+      tags:
+        - route
+      summary: 路線を取得
+      description: 路線を取得
+      operationId: getRouteById
+      parameters:
+        - name: routeId
+          in: path
+          description: ID of route to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Route not found
+      security:
+        - user_auth: [role:admin]
+    delete:
+      tags:
+        - route
+      summary: 路線を削除
+      description: 路線を削除
+      operationId: deleteRoute
+      parameters:
+        - name: routeId
+          in: path
+          description: ID of route to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid route value
+      security:
+        - user_auth: [role:admin] 
+  /routes:
+    get:
+      tags:
+        - route
+      summary: 路線と空き座席数を取得
+      description: 路線と空き座席数を取得
+      operationId: listRoutes
+      parameters:
+        - name: routeId
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        default:
+          description: Default error sample response
+  /user/seats:
+    get:
+      tags:
+        - seat
+      summary: 座席一覧を取得
+      description: 座席一覧を取得
+      operationId: listSeats
+      parameters:
+        - name: route_id
+          in: query
+          description: Route ID to filter by
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: "Page number (default: 1)"
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: "Items per page (default: 10)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: []
+  /admin/seats:
+    put:
+      tags:
+        - seat
+      summary: 座席を更新
+      description: 座席を更新
+      operationId: updateSeat
+      requestBody:
+        description: Update an existent seat in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seat'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Seat not found
+        '422':
+          description: Validation exception
+      security:
+        - user_auth: [role:admin]
+    post:
+      tags:
+        - seat
+      summary: 座席を追加
+      description: 座席を追加
+      operationId: addSeat
+      requestBody:
+        description: Create a new seat in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seat'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Seat'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - user_auth: [role:admin]
+  /admin/seats/{seatId}:
+    get:
+      tags:
+        - seat
+      summary: 座席を取得
+      description: 座席を取得
+      operationId: getSeatById
+      parameters:
+        - name: seatId
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+      security:
+        - user_auth: [role:admin]
+    delete:
+      tags:
+        - seat
+      summary: 座席を削除
+      description: 座席を削除
+      operationId: deleteSeat
+      parameters:
+        - name: seatId
+          in: path
+          description: ID of seat to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid seat value
+      security:
+        - user_auth: [role:admin]
+  /admin/seatclass:
+    get:
+      tags:
+        - seatclass
+      summary: 座席クラス一覧を取得
+      description: 座席クラス一覧を取得
+      operationId: listSeatclasses
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    format: int64
+                  seatclasses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SeatClass'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+    put:
+      tags:
+        - seatclass
+      summary: 座席クラスを更新
+      description: 座席クラスを更新
+      operationId: updateSeatclass
+      requestBody:
+        description: Update an existing seatclass
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - seatclass_id
+              properties:
+                seatclass_id:
+                  type: integer
+                  format: uint
+                seatclass_name:
+                  type: string
+                factor:
+                  type: number
+                  format: float64
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+    post:
+      tags:
+        - seatclass
+      summary: 座席クラスを追加
+      description: 座席クラスを追加
+      operationId: addSeatclass
+      requestBody:
+        description: Create a new seatclass
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - seatclass_name
+                - factor
+              properties:
+                seatclass_name:
+                  type: string
+                factor:
+                  type: number
+                  format: float64
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+  /admin/seatclass/{seatclassId}:
+    get:
+      tags:
+        - seatclass
+      summary: 座席クラスを取得
+      description: 座席クラスを取得
+      operationId: getSeatclassById
+      parameters:
+        - name: seatclassId
+          in: path
+          description: ID of seatclass to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Seatclass not found
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+    delete:
+      tags:
+        - seatclass
+      summary: 座席クラスを削除
+      description: 座席クラスを削除
+      operationId: deleteSeatclass
+      parameters:
+        - name: seatclassId
+          in: path
+          description: ID of seatclass to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid seatclass value
+      security:
+        - user_auth: [role:admin]
+  /register:
+    post:
+      tags:
+        - user
+      summary: ユーザーを登録
+      description: ユーザーを登録
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+  /login:
+    post:
+      tags:
+        - user
+      summary: ログイン
+      description: ログイン
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+  /admin/reservations:
+    get:
+      tags:
+        - reservation
+      summary: 予約一覧を取得
+      description: 予約一覧を取得
+      operationId: listReservations
+      parameters:
+        - name: route_id
+          in: query
+          description: Route ID to filter by
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Status to filter by
+          schema:
+            type: integer
+        - name: start_time
+          in: query
+          description: Start time to filter by (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: end_time
+          in: query
+          description: End time to filter by (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: "Page number (default: 1)"
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: "Items per page (default: 10)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: [role:admin]
+  /admin/reservations/{reservationId}:
+    get:
+      tags:
+        - reservation
+      summary: 予約詳細を取得
+      description: 予約詳細を取得
+      operationId: getReservation
+      parameters:
+        - name: reservationId
+          in: path
+          description: ID of reservation to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Reservation not found
+      security:
+        - user_auth: [role:admin]
+  /user/reservations:
+    get:
+      tags:
+        - reservation
+      summary: 予約一覧を取得
+      description: 予約一覧を取得
+      operationId: listReservations
+      parameters:
+        - name: route_id
+          in: query
+          description: Route ID to filter by
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Status to filter by
+          schema:
+            type: integer
+        - name: start_time
+          in: query
+          description: Start time to filter by (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: end_time
+          in: query
+          description: End time to filter by (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          description: "Page number (default: 1)"
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: page_size
+          in: query
+          description: "Items per page (default: 10)"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+      security:
+        - user_auth: []
+    post:
+      tags:
+        - reservation
+      summary: 予約を作成
+      description: 予約を作成
+      operationId: createReservation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - user_auth: []
+  /user/reservations/{reservationId}:
+    get:
+      tags:
+        - reservation
+      summary: 予約詳細を取得
+      description: 予約詳細を取得
+      operationId: getReservation
+      parameters:
+        - name: reservationId
+          in: path
+          description: ID of reservation to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Reservation not found
+      security:
+        - user_auth: []
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+      xml:
+        name: user
+    
+    Route:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        departure:
+          type: string
+        arrival:
+          type: string
+        departureTime:
+          type: string
+          format: date-time
+        arrivalTime:
+          type: string
+          format: date-time
+
+    SuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+        message:
+          type: string
+          example: "Success"
+    Seat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        number:
+          type: string
+        seatClassId:
+          type: integer
+        routeId:
+          type: integer
+        status:
+          type: string
+          enum: [available, reserved, occupied]
+
+    SeatClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+        seatId:
+          type: integer
+        routeId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+  securitySchemes:
+    user_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+      description: User authentication token
+
