@@ -13,4 +13,9 @@ var (
 		Message:    "Internal server error",
 		HTTPStatus: http.StatusInternalServerError,
 	}
+	ErrNotFound = &AppError{
+		Code:       "ERR404",
+		Message:    "Not found",
+		HTTPStatus: http.StatusNotFound,
+	}
 )

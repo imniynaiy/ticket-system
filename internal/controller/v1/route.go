@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imniynaiy/ticket-system/internal/errors"
 	"github.com/imniynaiy/ticket-system/internal/model"
 	"github.com/imniynaiy/ticket-system/internal/service"
 )
@@ -16,16 +17,16 @@ func AddRouteRoutes(rg *gin.RouterGroup) {
 func listRoutes(ctx *gin.Context) {
 	var req model.UserListRoutesReq
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	result, err := service.UserListRoutes(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(result))
 
 }

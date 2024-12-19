@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imniynaiy/ticket-system/internal/errors"
 	"github.com/imniynaiy/ticket-system/internal/model"
 	"github.com/imniynaiy/ticket-system/internal/service"
 )
@@ -32,17 +33,17 @@ func AddRouteRoutes(rg *gin.RouterGroup) {
 func createRoute(ctx *gin.Context) {
 	var req model.CreateRouteReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	route, err := service.CreateRoute(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, route)
+	ctx.JSON(http.StatusCreated, model.NewSuccessResponse(route))
 }
 
 // GetRoute godoc
@@ -58,17 +59,17 @@ func createRoute(ctx *gin.Context) {
 func getRoute(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid route ID"})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	route, err := service.GetRoute(uint(id))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrNotFound.HTTPStatus, model.NewErrorResponse(errors.ErrNotFound))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, route)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(route))
 }
 
 // UpdateRoute godoc
@@ -87,17 +88,17 @@ func getRoute(ctx *gin.Context) {
 func updateRoute(ctx *gin.Context) {
 	var req model.UpdateRouteReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	route, err := service.UpdateRoute(&req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, route)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(route))
 }
 
 // DeleteRoute godoc
@@ -113,12 +114,12 @@ func updateRoute(ctx *gin.Context) {
 func deleteRoute(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid route ID"})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	if err := service.DeleteRoute(uint(id)); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
@@ -139,7 +140,7 @@ func deleteRoute(ctx *gin.Context) {
 func listRoutes(ctx *gin.Context) {
 	var req model.ListRoutesReq
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
@@ -153,9 +154,9 @@ func listRoutes(ctx *gin.Context) {
 
 	result, err := service.ListRoutes(req.Page, req.PageSize)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(result))
 }

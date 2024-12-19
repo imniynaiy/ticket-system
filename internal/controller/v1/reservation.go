@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imniynaiy/ticket-system/internal/errors"
 	"github.com/imniynaiy/ticket-system/internal/model"
 	"github.com/imniynaiy/ticket-system/internal/service"
 )
@@ -20,49 +21,49 @@ func getReservation(ctx *gin.Context) {
 	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
 	userId := ctx.GetUint("UserId")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid reservation ID"})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	reservation, err := service.GetUserReservationWithDetails(uint(id), userId)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrNotFound.HTTPStatus, model.NewErrorResponse(errors.ErrNotFound))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, reservation)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(reservation))
 }
 
 func listReservations(ctx *gin.Context) {
 	userId := ctx.GetUint("UserId")
 	var req model.ListReservationsReq
 	if err := ctx.ShouldBindQuery(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	result, err := service.ListUserReservations(userId, &req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(result))
 }
 
 func createReservation(ctx *gin.Context) {
 	userId := ctx.GetUint("UserId")
 	var req model.CreateReservationReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInvalidRequest.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidRequest))
 		return
 	}
 
 	result, err := service.CreateReservation(userId, &req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(errors.ErrInternalServerError.HTTPStatus, model.NewErrorResponse(errors.ErrInternalServerError))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	ctx.JSON(http.StatusOK, model.NewSuccessResponse(result))
 }
