@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imniynaiy/ticket-system/internal/errors"
+	"github.com/imniynaiy/ticket-system/internal/model"
 	"github.com/imniynaiy/ticket-system/internal/util"
 )
 
@@ -16,13 +17,13 @@ func Authenticationer() gin.HandlerFunc {
 		h := c.GetHeader(authHeader)
 		_, token, found := strings.Cut(h, "Bearer ")
 		if !found {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.AbortWithStatusJSON(errors.ErrInvalidToken.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidToken))
 			return
 		}
 
 		session, err := util.VerifyTokenWithRedis(token)
 		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.AbortWithStatusJSON(errors.ErrInvalidToken.HTTPStatus, model.NewErrorResponse(errors.ErrInvalidToken))
 			return
 		}
 
